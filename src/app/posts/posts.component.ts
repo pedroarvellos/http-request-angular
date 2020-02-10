@@ -29,4 +29,18 @@ export class PostsComponent {
         this.posts.splice(0, 0, post)
       });
   }
+
+  updatePost(post) {
+    this.http.patch<any>(`${this.url}/${post.id}`, JSON.stringify({ isRead: true }))
+      .subscribe(res => {
+        console.log(res)
+      })
+  }
+
+  deletePost(post) {
+    this.http.delete<any>(`${this.url}/${post.id}`)
+      .subscribe(res => {
+        this.posts = this.posts.filter(p => p.id !== post.id);
+      })
+  }
 }

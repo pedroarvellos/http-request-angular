@@ -21,13 +21,12 @@ export class PostsComponent {
 
   createPost(titleInput: HTMLInputElement) {
     let post: any = { title: titleInput.value };
+    titleInput.value = ''
 
     this.http.post<any>(this.url, JSON.stringify(post))
       .subscribe(res => {
         post['id'] = res.id;
         this.posts.splice(0, 0, post)
-        
-        titleInput.value = ''
       });
   }
 }

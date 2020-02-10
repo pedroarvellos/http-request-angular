@@ -8,11 +8,26 @@ import { HttpClient } from '@angular/common/http';
 })
 export class PostsComponent {
   posts: any[];
-  
-  constructor(http: HttpClient) {
-    http.get<[]>('http://jsonplaceholder.typicode.com/posts')
+  private url = 'http://jsonplaceholder.typicode.com/posts';
+
+  // when I decorate it as private, I can access as a variable
+  // from the class.
+  constructor(private http: HttpClient) {
+    http.get<[]>(this.url)
       .subscribe(res => {
         this.posts = res;
+      });
+  }
+
+  createPost(titleInput: HTMLInputElement) {
+    let post: any = { title: titleInput.value };
+
+    this.http.post<any>(this.url, JSON.stringify(post))
+      .subscribe(res => {
+        post['id'] = res.id;
+        this.posts.splice(0, 0, post)
+        
+        titleInput.value = ''
       });
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -6,14 +6,16 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css']
 })
-export class PostsComponent {
+export class PostsComponent implements OnInit {
   posts: any[];
   private url = 'http://jsonplaceholder.typicode.com/posts';
 
   // when I decorate it as private, I can access as a variable
   // from the class.
-  constructor(private http: HttpClient) {
-    http.get<[]>(this.url)
+  constructor(private http: HttpClient) { }
+
+  ngOnInit() {
+    this.http.get<[]>(this.url)
       .subscribe(res => {
         this.posts = res;
       });

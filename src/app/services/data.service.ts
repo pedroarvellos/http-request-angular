@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { AppError } from '../common/app-error';
@@ -13,7 +13,11 @@ export class DataService {
   constructor(private url: string, private http: HttpClient) { }
 
   getAll() {
-    return this.http.get<[]>(this.url);
+    return this.http.get<[]>(this.url)
+    .pipe(
+        map(res => res),
+        catchError(this.handleError)
+      );
   }
 
   create(resource) {

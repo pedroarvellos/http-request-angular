@@ -18,9 +18,7 @@ export class PostsComponent implements OnInit {
 
   ngOnInit() {
     this.service.getAll()
-      .subscribe(res => {
-        this.posts = res;
-      }, err => {
+      .subscribe(res => this.posts = res, err => {
         alert(err.errorDescription.status + ' ' + err.errorDescription.message)
       });
   }
@@ -44,9 +42,7 @@ export class PostsComponent implements OnInit {
 
   updatePost(post) {
     this.service.update(post)
-      .subscribe(res => {
-        console.log(res)
-      }, (err: AppError) => {
+      .subscribe(res => console.log(res), (err: AppError) => {
         if (err instanceof NotFoundError) {
           alert(err.errorDescription.status + ' ' + err.errorDescription.message)
         } else if (err instanceof BadRequestError) {
@@ -59,9 +55,7 @@ export class PostsComponent implements OnInit {
 
   deletePost(post) {
     this.service.delete(post.id)
-      .subscribe(res => {
-        this.posts = this.posts.filter(p => p.id !== post.id);
-      }, (err: AppError) => {
+      .subscribe(() => this.posts = this.posts.filter(p => p.id !== post.id), (err: AppError) => {
         if (err instanceof NotFoundError) {
           alert(err.errorDescription.status + ' ' + err.errorDescription.message)
         } else {

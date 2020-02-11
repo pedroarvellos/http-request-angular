@@ -18,9 +18,9 @@ export class PostsComponent implements OnInit {
       .subscribe(res => {
         this.posts = res;
       },
-        err => {
-          alert('An unexpected error occured.')
-        });
+      err => {
+        alert('An unexpected error occured.')
+      });
   }
 
   createPost(titleInput: HTMLInputElement) {
@@ -32,9 +32,14 @@ export class PostsComponent implements OnInit {
         post['id'] = res.id;
         this.posts.splice(0, 0, post)
       },
-        err => {
+      (err: Response) => {
+        if(err.status === 400) {
+          console.log(err);
+        } else {
+          console.log(err);
           alert('An unexpected error occured.')
-        });
+        };
+      });
   }
 
   updatePost(post) {
@@ -42,18 +47,24 @@ export class PostsComponent implements OnInit {
       .subscribe(res => {
         console.log(res)
       },
-        err => {
-          alert('An unexpected error occured.')
-        });
+      err => {
+        alert('An unexpected error occured.')
+      });
   }
 
   deletePost(post) {
-    this.service.deltePost(post.id)
+    this.service.deletePost(post.id)
       .subscribe(res => {
         this.posts = this.posts.filter(p => p.id !== post.id);
       },
-        err => {
+      (err: Response) => {
+        if(err.status === 404) {
+          console.log(err)
+          alert('Post already deleted.')
+        } else {
+          console.log(err)
           alert('An unexpected error occured.')
-        });
+        };
+      });
   }
 }

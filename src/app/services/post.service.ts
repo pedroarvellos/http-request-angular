@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class PostService {
-  private url = 'http://djsonplaceholder.typicode.com/posts';
+  private url = 'http://jsonplaceholder.typicode.com/posts';
 
   constructor(private http: HttpClient) { }
 
@@ -21,7 +21,7 @@ export class PostService {
     return this.http.patch<any>(`${this.url}/${post.id}`, JSON.stringify({ isRead: true }));
   }
 
-  deltePost(id) {
+  deletePost(id) {
     return this.http.delete<any>(`${this.url}/${id}`)
   }
 }

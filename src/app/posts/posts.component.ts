@@ -8,7 +8,7 @@ import { PostService } from '../services/post.service';
 })
 export class PostsComponent implements OnInit {
   posts: any[];
-  
+
   // when I decorate it as private, I can access as a variable
   // from the class.
   constructor(private service: PostService) { }
@@ -17,7 +17,10 @@ export class PostsComponent implements OnInit {
     this.service.getPosts()
       .subscribe(res => {
         this.posts = res;
-      });
+      },
+        err => {
+          alert('An unexpected error occured.')
+        });
   }
 
   createPost(titleInput: HTMLInputElement) {
@@ -28,20 +31,29 @@ export class PostsComponent implements OnInit {
       .subscribe(res => {
         post['id'] = res.id;
         this.posts.splice(0, 0, post)
-      });
+      },
+        err => {
+          alert('An unexpected error occured.')
+        });
   }
 
   updatePost(post) {
     this.service.updatePost(post)
       .subscribe(res => {
         console.log(res)
-      })
+      },
+        err => {
+          alert('An unexpected error occured.')
+        });
   }
 
   deletePost(post) {
     this.service.deltePost(post.id)
       .subscribe(res => {
         this.posts = this.posts.filter(p => p.id !== post.id);
-      })
+      },
+        err => {
+          alert('An unexpected error occured.')
+        });
   }
 }

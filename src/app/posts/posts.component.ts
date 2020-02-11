@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { PostService } from '../services/post.service';
 
 @Component({
   selector: 'posts',
@@ -8,14 +8,13 @@ import { HttpClient } from '@angular/common/http';
 })
 export class PostsComponent implements OnInit {
   posts: any[];
-  private url = 'http://jsonplaceholder.typicode.com/posts';
-
+  
   // when I decorate it as private, I can access as a variable
   // from the class.
-  constructor(private http: HttpClient) { }
+  constructor(private service: PostService) { }
 
   ngOnInit() {
-    this.http.get<[]>(this.url)
+    this.service.getPosts()
       .subscribe(res => {
         this.posts = res;
       });
@@ -25,7 +24,7 @@ export class PostsComponent implements OnInit {
     let post: any = { title: titleInput.value };
     titleInput.value = ''
 
-    this.http.post<any>(this.url, JSON.stringify(post))
+    this.service.createPost(post)
       .subscribe(res => {
         post['id'] = res.id;
         this.posts.splice(0, 0, post)
@@ -33,14 +32,14 @@ export class PostsComponent implements OnInit {
   }
 
   updatePost(post) {
-    this.http.patch<any>(`${this.url}/${post.id}`, JSON.stringify({ isRead: true }))
+    this.service.updatePost(post)
       .subscribe(res => {
         console.log(res)
       })
   }
 
   deletePost(post) {
-    this.http.delete<any>(`${this.url}/${post.id}`)
+    this.service.deltePost(post.id)
       .subscribe(res => {
         this.posts = this.posts.filter(p => p.id !== post.id);
       })

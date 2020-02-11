@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../services/post.service';
+import { AppError } from '../common/app-error';
+import { NotFoundError } from '../common/not-found-error';
+import { BadRequestError } from '../common/bad-request-error';
 
 @Component({
   selector: 'posts',
@@ -17,9 +20,8 @@ export class PostsComponent implements OnInit {
     this.service.getPosts()
       .subscribe(res => {
         this.posts = res;
-      },
-      err => {
-        alert('An unexpected error occured.')
+      }, err => {
+        alert(err.errorDescription.status + ' ' + err.errorDescription.message)
       });
   }
 
@@ -31,13 +33,11 @@ export class PostsComponent implements OnInit {
       .subscribe(res => {
         post['id'] = res.id;
         this.posts.splice(0, 0, post)
-      },
-      (err: Response) => {
-        if(err.status === 400) {
-          console.log(err);
+      }, (err: AppError) => {
+        if (err instanceof BadRequestError) {
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
         } else {
-          console.log(err);
-          alert('An unexpected error occured.')
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
         };
       });
   }
@@ -46,9 +46,14 @@ export class PostsComponent implements OnInit {
     this.service.updatePost(post)
       .subscribe(res => {
         console.log(res)
-      },
-      err => {
-        alert('An unexpected error occured.')
+      }, (err: AppError) => {
+        if (err instanceof NotFoundError) {
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
+        } else if (err instanceof BadRequestError) {
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
+        } else {
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
+        };
       });
   }
 
@@ -56,14 +61,11 @@ export class PostsComponent implements OnInit {
     this.service.deletePost(post.id)
       .subscribe(res => {
         this.posts = this.posts.filter(p => p.id !== post.id);
-      },
-      (err: Response) => {
-        if(err.status === 404) {
-          console.log(err)
-          alert('Post already deleted.')
+      }, (err: AppError) => {
+        if (err instanceof NotFoundError) {
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
         } else {
-          console.log(err)
-          alert('An unexpected error occured.')
+          alert(err.errorDescription.status + ' ' + err.errorDescription.message)
         };
       });
   }

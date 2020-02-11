@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
+import {Observable, throwError } from 'rxjs';
+import { AppError } from '../common/app-error';
+import { NotFoundError } from '../common/not-found-error';
+import { BadRequestError } from '../common/bad-request-error';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +19,46 @@ export class PostService {
   }
 
   createPost(post) {
-    return this.http.post<any>(this.url, JSON.stringify(post));
+    return this.http.post<any>(this.url, JSON.stringify(post))
+    .pipe(
+      map(res => res),
+      catchError(err => {
+        if(err.status === 400) {
+          return throwError(new BadRequestError(err, 'Invalid data.'));
+        } else {
+          return throwError(new AppError(err, 'Unexpected error.'));
+        }
+      })
+    );
   }
 
   updatePost(post) {
-    return this.http.patch<any>(`${this.url}/${post.id}`, JSON.stringify({ isRead: true }));
+    return this.http.patch<any>(`${this.url}/${post.id}`, JSON.stringify({ isRead: true }))
+    .pipe(
+      map(res => res),
+      catchError(err => {
+        if(err.status === 404) {
+          return throwError(new NotFoundError(err))
+        } else if(err.status === 400) {
+          return throwError(new BadRequestError(err, 'Invalid data.'));
+        } else {
+          return throwError(new AppError(err, 'Unexpected error.'));
+        }
+      })
+    );
   }
 
   deletePost(id) {
-    return this.http.delete<any>(`${this.url}/${id}`)
+    return this.http.delete<any>(`${this.url}d/${id}`)
+      .pipe(
+        map(res => res),
+        catchError(err => {
+          if(err.status === 404) {
+            return throwError(new NotFoundError(err, 'It was not possible to find post.'));
+          } else {
+            return throwError(new AppError(err, 'Unexpected error.'));
+          }
+        })
+      )
   }
 }
